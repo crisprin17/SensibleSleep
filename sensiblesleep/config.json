@@ -1,0 +1,26 @@
+{
+    "sampling": {
+        "n_samples": 2000,
+        "n_chains": 7,
+        "tune": 2000,
+        "cores": 7,
+        "target_accept": 0.95,
+        "compute_convergence_checks": true,
+    "progressbar": true,
+        "random_seed": 17
+    },
+    "model": {
+        "n_bins": 96,
+        "lambda_awake": 5,
+        "tsleep": 23,
+        "tawake": 6,
+        "alpha_awake": 2.5,
+        "beta_awake": 1,
+        "lambda_sleep": 10000,
+        "alpha_lambda": 1,
+        "beta_lambda": 1,
+        "alpha_t": 1,
+        "beta_t": 1
+    
+    }
+}
