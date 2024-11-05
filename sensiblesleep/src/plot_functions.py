@@ -1,4 +1,4 @@
-from typing import Any, List, Dict
+from typing import Any, Dict, List
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,7 +6,7 @@ import pandas as pd
 import seaborn as sns
 import xarray as xr
 
-import utils
+from . import utils
 
 
 def plot_screen_events(observed_event_counts: np.ndarray, n_days: int) -> None:
@@ -30,26 +30,65 @@ def plot_screen_events(observed_event_counts: np.ndarray, n_days: int) -> None:
     ax.bar(hours, observed_event_counts, width=0.8)
 
     # Plot the sleep and wake times with red dashed lines
-    ax.axvline(x=utils.get_bin_from_time(23), color="red", linestyle="--", linewidth=2, label="tsleep (23:00)")
-    ax.axvline(x=utils.get_bin_from_time(6), color="red", linestyle="--", linewidth=2, label="tawake (06:00)")
+    ax.axvline(
+        x=utils.get_bin_from_time(23),
+        color="red",
+        linestyle="--",
+        linewidth=2,
+        label="tsleep (23:00)",
+    )
+    ax.axvline(
+        x=utils.get_bin_from_time(6),
+        color="red",
+        linestyle="--",
+        linewidth=2,
+        label="tawake (06:00)",
+    )
 
     ax.set_xlabel("Hour of the Day", fontsize=12)
     ax.set_ylabel("Number of Screen Events", fontsize=12)
 
     # Set x-axis ticks to show time in a readable format
     ax.set_xticks(np.arange(0, 96, 4))  # Set ticks for 96 bins
-    ax.set_xticklabels([f"{int(hour):02d}:00" for hour in np.arange(16, 16 + 24) % 24], rotation=45)
+    ax.set_xticklabels(
+        [f"{int(hour):02d}:00" for hour in np.arange(16, 16 + 24) % 24], rotation=45
+    )
 
     # Annotating lambda values for awake and sleep periods
-    ax.text(utils.get_bin_from_time(17), max(observed_event_counts) * 0.8, r"$\lambda_{awake}$", fontsize=14)
-    ax.text(utils.get_bin_from_time(2), max(observed_event_counts) * 0.8, r"$\lambda_{sleep}$", fontsize=14)
-    ax.text(utils.get_bin_from_time(9), max(observed_event_counts) * 0.8, r"$\lambda_{awake}$", fontsize=14)
+    ax.text(
+        utils.get_bin_from_time(17),
+        max(observed_event_counts) * 0.8,
+        r"$\lambda_{awake}$",
+        fontsize=14,
+    )
+    ax.text(
+        utils.get_bin_from_time(2),
+        max(observed_event_counts) * 0.8,
+        r"$\lambda_{sleep}$",
+        fontsize=14,
+    )
+    ax.text(
+        utils.get_bin_from_time(9),
+        max(observed_event_counts) * 0.8,
+        r"$\lambda_{awake}$",
+        fontsize=14,
+    )
 
     # Annotating tsleep and tawake
     ax.text(
-        utils.get_bin_from_time(23.5), max(observed_event_counts) - 2, r"$t_{sleep}$", fontsize=14, color="red"
+        utils.get_bin_from_time(23.5),
+        max(observed_event_counts) - 2,
+        r"$t_{sleep}$",
+        fontsize=14,
+        color="red",
     )
-    ax.text(utils.get_bin_from_time(5.5), max(observed_event_counts) - 2, r"$t_{awake}$", fontsize=14, color="red")
+    ax.text(
+        utils.get_bin_from_time(5.5),
+        max(observed_event_counts) - 2,
+        r"$t_{awake}$",
+        fontsize=14,
+        color="red",
+    )
 
     # Add grid for clarity
     ax.grid(True)
@@ -63,9 +102,9 @@ def plot_logp(map_models: Dict[str, xr.Dataset], map_colors: Dict[str, str]) -> 
     Function to plot the negative log posterior for each model.
 
     Parameters:
-    map_models (Dict[str, xr.Dataset]): Dictionary mapping model names to 
+    map_models (Dict[str, xr.Dataset]): Dictionary mapping model names to
                 their xarray Dataset containing posterior samples.
-    map_colors (Dict[str, str]): Dictionary mapping model names to 
+    map_colors (Dict[str, str]): Dictionary mapping model names to
                 their respective colors for plotting.
     """
     # Now, plot the negative logp for each model
@@ -93,7 +132,7 @@ def plot_event_counts(df: pd.DataFrame, user: Any) -> None:
     Function to plot the histogram of event counts grouped by user.
 
     Parameters:
-    df (pd.DataFrame): DataFrame containing event data with 
+    df (pd.DataFrame): DataFrame containing event data with
                 columns 'user', 'time', and 'event_count'.
     user (Any): User identifier to filter the DataFrame for plotting.
     """
@@ -115,7 +154,9 @@ def plot_event_counts(df: pd.DataFrame, user: Any) -> None:
     plt.xlabel("Time Bin (15-min intervals over 24 hours)", fontsize=12)
     plt.ylabel("Total Event Count", fontsize=12)
     plt.xticks(
-        ticks=np.arange(0, 96, 4), labels=[f"{int(hour)}:00" for hour in np.arange(16, 16 + 24) % 24], rotation=45
+        ticks=np.arange(0, 96, 4),
+        labels=[f"{int(hour)}:00" for hour in np.arange(16, 16 + 24) % 24],
+        rotation=45,
     )
 
     # Show the plot
@@ -123,7 +164,9 @@ def plot_event_counts(df: pd.DataFrame, user: Any) -> None:
     plt.show()
 
 
-def plot_posterior_sleep_wake(tsleep_samples: List[float], tawake_samples: List[float], n_bins: int = 96) -> None:
+def plot_posterior_sleep_wake(
+    tsleep_samples: List[float], tawake_samples: List[float], n_bins: int = 96
+) -> None:
     """
     Function to plot the aggregate posterior probability distributions of `tsleep` and `tawake` as histograms.
 
@@ -137,8 +180,22 @@ def plot_posterior_sleep_wake(tsleep_samples: List[float], tawake_samples: List[
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # Plot histograms for the posterior samples with transparency (alpha) to avoid overlap
-    ax.hist(tsleep_samples, bins=n_bins, density=True, color="blue", alpha=0.6, label=r"$t_{sleep}$")
-    ax.hist(tawake_samples, bins=n_bins, density=True, color="green", alpha=0.6, label=r"$t_{awake}$")
+    ax.hist(
+        tsleep_samples,
+        bins=n_bins,
+        density=True,
+        color="blue",
+        alpha=0.6,
+        label=r"$t_{sleep}$",
+    )
+    ax.hist(
+        tawake_samples,
+        bins=n_bins,
+        density=True,
+        color="green",
+        alpha=0.6,
+        label=r"$t_{awake}$",
+    )
 
     # Add labels and legend
     ax.set_xlabel("Hour of the Day", fontsize=12)
@@ -153,11 +210,20 @@ def plot_posterior_sleep_wake(tsleep_samples: List[float], tawake_samples: List[
     ax.legend()
 
     # Set title and show the plot
-    ax.set_title("Aggregate Posterior Probability Distributions of $t_{sleep}$ and $t_{awake}$", fontsize=14)
+    ax.set_title(
+        "Aggregate Posterior Probability Distributions of $t_{sleep}$ and $t_{awake}$",
+        fontsize=14,
+    )
     plt.show()
 
 
-def plot_DIC(reference_DIC, DIC_values, DIC_errors, model_names, reference_model: str = "pooled_pooled") -> None:
+def plot_DIC(
+    reference_DIC,
+    DIC_values,
+    DIC_errors,
+    model_names,
+    reference_model: str = "pooled_pooled",
+) -> None:
     """
     Function to plot the DIC relative to a reference model for each model.
 
@@ -175,7 +241,14 @@ def plot_DIC(reference_DIC, DIC_values, DIC_errors, model_names, reference_model
     y_pos = np.arange(len(DIC_values))
 
     # Plot the bars with error bars
-    ax.barh(y_pos, DIC_values, xerr=DIC_errors, color="blue", edgecolor="black", align="center")
+    ax.barh(
+        y_pos,
+        DIC_values,
+        xerr=DIC_errors,
+        color="blue",
+        edgecolor="black",
+        align="center",
+    )
     ax.errorbar(DIC_values, y_pos, xerr=DIC_errors, fmt="none", ecolor="red", capsize=5)
 
     # Set labels and title

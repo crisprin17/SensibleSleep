@@ -1,6 +1,8 @@
-{
-    "n_users": 126,
-    "n_days": 7,
-    "minutes_per_bin": 15,
-    "avg_screen_ons": 76
+{ "data":
+    {
+        "n_users": 126,
+        "n_days": 7,
+        "minutes_per_bin": 15,
+        "avg_screen_ons": 76
+    }
 }

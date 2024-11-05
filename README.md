@@ -80,3 +80,11 @@ Research Foundation: This package is based on the methodology and findings from 
 Cuttone A, Bækgaard P, Sekara V, Jonsson H, Larsen JE, Lehmann S. SensibleSleep: A Bayesian Model for Learning Sleep Patterns from Smartphone Events. PLoS One. 2017 Jan 11;12(1):e0169901. doi: 10.1371/journal.pone.0169901. PMID: 28076375; PMCID: PMC5226832.
 
 Open-Source Community: Thanks to all the contributors and the open-source community for their invaluable tools and libraries that made this project possible.
+
+
+## Need Help?
+If you encounter any issues or have questions, feel free to:
+
+Open an issue on the GitHub repository: https://github.com/crisprin17/SensibleSleep/issues
+Contact the maintainer at cristiana.principato@gmail.com.
+We're here to help you make the most out of SensibleSleep!

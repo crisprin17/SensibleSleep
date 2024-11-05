@@ -4,19 +4,22 @@
         "n_chains": 7,
         "tune": 2000,
         "cores": 7,
-        "target_accept": 0.95,
+        "target_accept": 0.98,
         "compute_convergence_checks": true,
-    "progressbar": true,
-        "random_seed": 17
+        "progressbar": true,
+        "random_seed": 42
     },
     "model": {
         "n_bins": 96,
-        "lambda_awake": 5,
-        "tsleep": 23,
-        "tawake": 6,
+
         "alpha_awake": 2.5,
         "beta_awake": 1,
+        "lambda_awake": 5,
+        "tawake": 6,
+
         "lambda_sleep": 10000,
+        "tsleep": 23,
+
         "alpha_lambda": 1,
         "beta_lambda": 1,
         "alpha_t": 1,

@@ -11,7 +11,7 @@ A progression of Bayesian models for extracting sleep patterns from smartphone e
 ## Models
 
 ### Pooled-Pooled Model
-
+![Alt text](sensiblesleep/images/pooled_pooled_model_graph.png)
 Assumptions:
 - Fixed Sleep and Wake Times: Same times across all days.
 - Consistent Interaction Rate: Same awake interaction rate every day.
@@ -24,6 +24,7 @@ Parameters:
 - Usage: When user behavior is highly consistent daily.
 
 ### Independent-Pooled Model
+![Alt text](sensiblesleep/images/independent_pooled_model_graph.png)
 Assumptions:
 - Variable Sleep and Wake Times: Different each day.
 - Consistent Interaction Rate: Same awake interaction rate every day.
@@ -38,7 +39,7 @@ For each day i:
 
 
 ### Independent-Independent Model
-
+![Alt text](sensiblesleep/images/independent_independent_model_graph.png)
 Assumptions:
 - Variable Sleep and Wake Times: Different each day.
 - Variable Interaction Rates: Different awake rates each day.
@@ -55,6 +56,7 @@ For each day i:
 
 
 ### Independent-Hierarchical (hyper) Model
+![Alt text](sensiblesleep/images/indipendent_hyper_model_graph.png)
 Assumptions:
 - Variable Sleep and Wake Times: Different each day.
 - Hierarchical Interaction Rates: Awake rates vary daily but share common hyperparameters.
@@ -72,6 +74,7 @@ For each day i:
 
 
 ### Hierarchical-Hierarchical Model
+![Alt text](sensiblesleep/images/hyper_hyper_model_graph.png)
 Assumptions:
 - Hierarchical Sleep and Wake Times: Times vary daily, drawn from user-specific distributions.
 - Hierarchical Interaction Rates: Awake rates vary daily, drawn from common hyperparameters.

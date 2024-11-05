@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sensiblesleep"
+version = "0.1.0"
+description = "A Bayesian model for learning sleep patterns from smartphone events"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Cristiana Principato", email = "cristiana.principato@gmail.com" }
+]
+license = { text = "MIT License" }
+keywords = ["bayesian", "sleep patterns", "smartphone", "PyMC"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+dependencies = [
+    "pymc>=4.0",
+    "numpy>=1.18.0",
+    "pandas>=1.0.0",
+    "matplotlib>=3.0.0",
+    "arviz>=0.11.0",
+    "plotly>=5.0.0",
+    "seaborn>=0.11.0",
+    "ipywidgets>=7.6.0",
+    "graphviz>=0.16",
+    "nbformat>=5.0.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/crisprin17/SensibleSleep"
+"Repository" = "https://github.com/crisprin17/SensibleSleep"
+"Documentation" = "https://github.com/crisprin17/SensibleSleep#readme"

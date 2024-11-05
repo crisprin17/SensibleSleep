@@ -17,27 +17,32 @@ def get_bin_from_time(hour: Union[int, float]) -> int:
     Raises:
     ValueError: If the hour value is out of the expected range.
     """
-    # Validate the hour input
-    if not (0 <= hour < 24):
-        raise ValueError("Hour value out of expected range (must be between 0 and 24).")
-
-    # Start time in hours (16:00 is 16 hours)
     start_hour = 16
-
-    # Compute the bin value depending on the time range
-    if start_hour <= hour < 24:
-        # First range: between 16:00 to 24:00
-        bin_value = int((hour - start_hour) * 4)
-    elif 0 <= hour < start_hour:
-        # Second range: between 00:00 to 16:00
-        bin_value = int((hour + 8) * 4)
-    else:
-        raise ValueError("Hour value out of expected range.")
-
+    bin_value = int(round((hour - start_hour) % 24 / 0.25))
     return bin_value
 
 
-def get_time_from_bin(bin_value) -> str:
+def get_time_from_bin(bin: int):
+    """
+    Function to determine the hour of the day corresponding to a given bin value.
+
+    Parameters:
+    bin (int): The bin value representing a 15-minute interval (0 to 95).
+
+    Returns:
+    Union[int, float]: The hour of the day in 24-hour format (e.g., 0-23.99).
+    """
+    # Validate bin input
+    if bin < 0 or bin > 96:
+        raise ValueError("Bin value must be in the range [0, 95].")
+
+    # Reverse the bin calculation
+    start_hour = 16
+    hour = (bin * 0.25 + start_hour) % 24
+    return hour
+
+
+def get_string_time_from_bin(bin_value) -> str:
     """
     Function to determine the hour and minute of the day corresponding to a given bin value.
 
@@ -69,7 +74,9 @@ def get_time_from_bin(bin_value) -> str:
     return f"{current_hour:02}:{current_minute:02}"
 
 
-def extract_user_data(df: pd.DataFrame, user: str) -> Tuple[int, np.ndarray, np.ndarray]:
+def extract_user_data(
+    df: pd.DataFrame, user: str
+) -> Tuple[int, np.ndarray, np.ndarray]:
     """
     Extract data for a specific user from the DataFrame.
 
