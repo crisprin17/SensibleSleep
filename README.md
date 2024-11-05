@@ -57,12 +57,15 @@ from sensible_sleep. import build_model
 # Generate the synthetic data
 df = generate_synthetic_data()
 
-# Build the model (choose the desired model type)
-model = build_model(df, model_type='hierarchical_hierarchical')
+# for one user
+n_days, bin_hours, observed_event_counts = extract_user_data(df, user='user_001')
+n_bins, total_bins, time_bins = create_time_bins(n_days=n_days)
 
-# Sample from the model
-with model:
-    trace = pm.sample(draws=1000, tune=1000, cores=2, target_accept=0.9, random_seed=42)
+# Build the model (choose the desired model type)
+model_name = 'hyper_hyper'  
+trace, posterior_predictive, log_likelihood, logp = run_model(
+    model_name, observed_event_counts, n_bins, n_days, total_bins, time_bins
+)
 
 # Analyze the results
 plot_trace(trace)
