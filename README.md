@@ -89,5 +89,7 @@ Open-Source Community: Thanks to all the contributors and the open-source commun
 If you encounter any issues or have questions, feel free to:
 
 Open an issue on the GitHub repository: https://github.com/crisprin17/SensibleSleep/issues
-Contact the maintainer at cristiana.principato@gmail.com.
+
+Contact the maintainer at cristiana.principato@gmail.com or joannakuc789@gmail.com.
+
 We're here to help you make the most out of SensibleSleep!
