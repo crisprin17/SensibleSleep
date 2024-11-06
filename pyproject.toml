@@ -9,7 +9,8 @@ description = "A Bayesian model for learning sleep patterns from smartphone even
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    { name = "Cristiana Principato", email = "cristiana.principato@gmail.com" }
+    { name = "Cristiana Principato", email = "cristiana.principato@gmail.com" },
+    { name = "Joanna Kuc", email = "joannakuc789@gmail.com" }
 ]
 license = { text = "MIT License" }
 keywords = ["bayesian", "sleep patterns", "smartphone", "PyMC"]
