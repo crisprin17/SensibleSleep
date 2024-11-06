@@ -52,7 +52,7 @@ az.style.use("arviz-doc")
 
 # Import the generate_synthetic_data function
 from synthetic_data.synthetic_data import generate_synthetic_data
-from sensible_sleep. import build_model
+from sensible_sleep.src.models import run_model
 
 # Generate the synthetic data
 df = generate_synthetic_data()
