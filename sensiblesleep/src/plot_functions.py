@@ -1,12 +1,10 @@
 from typing import Any, Dict, List
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import xarray as xr
-
-from . import utils
+from sensiblesleep.src import utils
 
 
 def plot_screen_events(observed_event_counts: np.ndarray, n_days: int) -> None:
