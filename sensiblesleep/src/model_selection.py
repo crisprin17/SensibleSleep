@@ -12,7 +12,8 @@ PLoS ONE, 12(1), e0169901.
 
 Models Implemented:
 -----------------
-1. Pooled-Pooled: 
+
+1. Pooled-Pooled:
    - Simplest model
    - Single sleep/wake time for all days
    - Shared activity rates
@@ -61,12 +62,12 @@ Date: 2024-11-19
 # python model_selection.py
 
 import json
-import numpy as np
-import pymc as pm
 from pathlib import Path
 
+import numpy as np
+
 # Import your custom modules (adjust the import paths as necessary)
-from model_functions import run_model, calculate_DIC
+from model_functions import calculate_DIC, run_model
 from plot_functions import plot_DIC, plot_logp
 
 SCRIPT_DIR = Path(__file__).parent
@@ -74,6 +75,7 @@ CONFIG_PATH = SCRIPT_DIR.parent / "config.json"
 CONFIG = json.load(open(CONFIG_PATH))
 MODELCONFIG = CONFIG["model"]
 SAMPLECONFIG = CONFIG["sampling"]
+DEBUG = CONFIG["debug"]
 
 # Load your observed data (replace with your actual data loading code)
 # For demonstration purposes, we'll create synthetic data
@@ -82,39 +84,6 @@ n_bins = 96  # Assuming 15-minute bins in a day
 total_bins = n_days * n_bins
 observed_event_counts = np.random.poisson(lam=5, size=total_bins)
 time_bins = np.tile(np.arange(n_bins), n_days)
-
-def validate_model(model, trace, progressbar=True):
-    """
-    (Optional)Perform validation checks on a fitted model.
-    
-    Parameters:
-    ----------
-    model : pm.Model
-        PyMC model object
-    trace : pm.MultiTrace
-        Trace from the fitted model
-    observed_event_counts : np.ndarray
-        Original observed data
-    progressbar : bool, optional
-        Whether to show progress bar for posterior predictive sampling
-        
-    Returns:
-    -------
-    dict
-        Dictionary containing validation metrics:
-        - posterior_predictive: Posterior predictive samples
-        - log_likelihood: Log likelihood of the model
-    """
-
-    with model:
-        posterior_predictive = pm.sample_posterior_predictive(
-            trace, progressbar=SAMPLECONFIG["progressbar"]
-        )
-        log_likelihood = pm.compute_log_likelihood(trace)
-        logp = trace.sample_stats["lp"]
-
-    return posterior_predictive, log_likelihood, logp
-
 
 # Run all models and collect traces and log probabilities
 model_names = [
@@ -126,19 +95,19 @@ model_names = [
 ]
 traces = {}
 logps = {}
-validation_metrics = {} # Optional
+if DEBUG:
+    validation_metrics = {}  # Optional
 
 for model_name in model_names:
     print(f"Running model: {model_name}")
-    model,trace, posterior_predictive, log_likelihood, logp = run_model(
+    model, trace, posterior_predictive, log_likelihood, logp = run_model(
         model_name, observed_event_counts, n_bins, n_days, total_bins, time_bins
     )
     traces[model_name] = trace
     logps[model_name] = logp
-    # optional 
-    validation_metrics[model_name] = validate_model(
-        model, trace, observed_event_counts
-    )
+    # optional
+    if DEBUG:
+        validation_metrics[model_name] = log_likelihood
 
 # Map model names to display names and colors for plotting
 map_models = {

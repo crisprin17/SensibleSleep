@@ -1,7 +1,8 @@
 import json
+from pathlib import Path
+
 import numpy as np
 import pymc as pm
-from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
 CONFIG = json.load(open(SCRIPT_DIR.parent / "config.json"))
@@ -16,7 +17,7 @@ def run_model(model_name, observed_event_counts, n_bins, n_days, total_bins, tim
     Parameters:
     ----------
     model_name : str
-        Name of the model to run ('pooled_pooled', 'independent_pooled', 
+        Name of the model to run ('pooled_pooled', 'independent_pooled',
         'independent_independent', 'independent_hyper', or 'hyper_hyper')
     observed_event_counts : np.ndarray
         Array of event counts in 15-minute bins
@@ -118,7 +119,7 @@ def build_pooled_pooled_model(
 ):
     """
     Build the simplest sleep detection model with pooled parameters.
-    
+
     All days share the same sleep/wake times and activity rates.
     Parameters:
     ----------
@@ -156,9 +157,7 @@ def build_pooled_pooled_model(
         event_rate = pm.math.switch(sleep_indicator, lambda_sleep, lambda_awake)
 
         # Likelihood
-        pm.Poisson(
-            "events", mu=event_rate, observed=observed_event_counts.reshape(-1, 1)
-        )
+        pm.Poisson("events", mu=event_rate, observed=observed_event_counts)
 
     return model
 
@@ -168,7 +167,7 @@ def build_independent_pooled_model(
 ):
     """
     Build a sleep detection model with independent sleep times but pooled rates.
-    
+
     Sleep/wake times vary by day but activity rates are shared across days.
     Parameters:
     ----------
@@ -230,7 +229,7 @@ def build_independent_independent_model(
 ):
     """
     Build a sleep detection model with independent parameters for both timing and rates.
-    
+
     Both sleep/wake times and awake activity rates vary independently by day.
     Parameters:
     ----------
@@ -270,6 +269,7 @@ def build_independent_independent_model(
         tsleep_expanded = np.repeat(tsleep, n_bins).reshape((total_bins, 1))
         tawake_expanded = np.repeat(tawake, n_bins).reshape((total_bins, 1))
         lambda_awake_expanded = np.repeat(lambda_awake, n_bins).reshape((total_bins, 1))
+        time_bins = np.arange(total_bins).reshape((total_bins, 1)) % n_bins
 
         # Calculate the sleep indicator using the expanded tsleep and tawake
         sleep_indicator = is_asleep(time_bins, tsleep_expanded, tawake_expanded, n_bins)
@@ -292,7 +292,7 @@ def build_independent_hyper_model(
 ):
     """
     Build a sleep detection model with independent timing and hierarchical rates.
-    
+
     Sleep/wake times vary independently, while activity rates follow a hierarchical structure.
     Parameters:
     ----------
@@ -339,6 +339,7 @@ def build_independent_hyper_model(
         tsleep_expanded = np.repeat(tsleep, n_bins).reshape((total_bins, 1))
         tawake_expanded = np.repeat(tawake, n_bins).reshape((total_bins, 1))
         lambda_awake_expanded = np.repeat(lambda_awake, n_bins).reshape((total_bins, 1))
+        time_bins = np.arange(total_bins).reshape((total_bins, 1)) % n_bins
 
         # Calculate the sleep indicator using the expanded tsleep and tawake
         sleep_indicator = is_asleep(time_bins, tsleep_expanded, tawake_expanded, n_bins)
@@ -362,7 +363,7 @@ def build_hyper_hyper_model(
 ):
     """
     Build the most complex sleep detection model with dual hierarchical structure.
-    
+
     Both sleep/wake times and activity rates follow hierarchical structures,
     capturing both individual variation and population-level patterns.
     Parameters:
@@ -433,7 +434,7 @@ def build_hyper_hyper_model(
         tsleep_expanded = np.repeat(tsleep, n_bins).reshape((total_bins, 1))
         tawake_expanded = np.repeat(tawake, n_bins).reshape((total_bins, 1))
         lambda_awake_expanded = np.repeat(lambda_awake, n_bins).reshape((total_bins, 1))
-
+        time_bins = np.arange(total_bins).reshape((total_bins, 1)) % n_bins
         # Calculate the sleep indicator using the expanded tsleep and tawake
         sleep_indicator = is_asleep(time_bins, tsleep_expanded, tawake_expanded, n_bins)
 
@@ -528,41 +529,43 @@ def calculate_DIC(map_models) -> tuple:
 
     for k, v in map_models.items():
         model_names.append(k)
-        
+
         # Get log likelihood data
         log_likelihood_data = v["log_likelihood"].events
-        
+
         # Step 1: Sum over events dimensions (events_dim_0 and events_dim_1 if present)
-        event_dims = ['events_dim_0']
-        if 'events_dim_1' in log_likelihood_data.dims:
-            event_dims.append('events_dim_1')
-            
+        event_dims = ["events_dim_0"]
+        if "events_dim_1" in log_likelihood_data.dims:
+            event_dims.append("events_dim_1")
+
         # Calculate deviances by summing over event dimensions
         deviances = -2 * log_likelihood_data.sum(dim=event_dims)
-        
+
         # Step 2: Expected deviance (mean across chains and draws)
-        expected_deviance = float(deviances.mean(dim=['chain', 'draw']))
-        
+        expected_deviance = float(deviances.mean(dim=["chain", "draw"]))
+
         # Step 3: Posterior mean log-likelihood
-        posterior_mean_log_likelihood = float(log_likelihood_data.mean(
-            dim=['chain', 'draw'] + event_dims
-        ))
+        posterior_mean_log_likelihood = float(
+            log_likelihood_data.mean(dim=["chain", "draw"] + event_dims)
+        )
         deviance_posterior_mean = -2 * posterior_mean_log_likelihood
-        
+
         # Step 4: DIC calculation
         p_D = expected_deviance - deviance_posterior_mean
         DIC = expected_deviance + p_D
-        
+
         # Step 5: Standard error
-        deviance_std = float(deviances.std(dim=['chain', 'draw']))
-        n_samples = log_likelihood_data.sizes['chain'] * log_likelihood_data.sizes['draw']
+        deviance_std = float(deviances.std(dim=["chain", "draw"]))
+        n_samples = (
+            log_likelihood_data.sizes["chain"] * log_likelihood_data.sizes["draw"]
+        )
         DIC_error = deviance_std / np.sqrt(n_samples)
-        
+
         # Store results (no need for .values[0] as we converted to float)
         if k == reference_model:
             reference_DIC = DIC
         else:
             DIC_values.append(DIC)
             DIC_errors.append(DIC_error)
-        
+
     return reference_DIC, DIC_values, DIC_errors, model_names
