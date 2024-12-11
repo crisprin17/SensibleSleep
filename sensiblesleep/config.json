@@ -1,4 +1,5 @@
 {
+    "debug": false,
     "sampling": {
         "n_samples": 2000,
         "n_chains": 7,
